@@ -1,0 +1,16 @@
+"int", "float", "return", "if", "else", "for", "while", 
+
+char *ptr = buffer;
+int num;
+
+if(true);
+//
+for(int i = 0; i < n; i++) {
+    return false;
+}
+//jdklj
+while (sscanf(ptr, "%d", &num) == 1) {
+    printf("Número extraído: %d\n", num);
+    while (            free(keywords);
+*ptr >= '0' && *ptr <= '9') ptr++;  // Avanza el puntero para saltar los dígitos leídos
+}
