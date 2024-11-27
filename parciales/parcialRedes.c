@@ -8,7 +8,6 @@
 #include <signal.h>
 #include <sys/wait.h>
 
-
 void error(char*);
 size_t shmSize(int, int, size_t);
 int** segmentoMatriz(int*, int);
@@ -24,6 +23,8 @@ bool transicionSaturadoInactivo(int**, int, int, int, int);
 int main(int argc, char **argv){
     if(argc != 2) error("Se espera un argumento (nombre del archivo a leer)\n");
 	FILE *file = fopen(argv[1], "r");
+	if(!file) error("error al abrir el archivo\n");
+
     int nHoras, N, M;
     fscanf(file, "%d %d %d", &nHoras, &N, &M);
     size_t sizeShm = shmSize(N, M, sizeof(int));
@@ -77,18 +78,19 @@ int main(int argc, char **argv){
             //printf("Desde el hijo %d\n", idx);
             for(int i = 0; i < N; i++) {
                 for(int j = 0; j < M; j++) {
+					bool band;
                     if(idx == 0) {
-                        bool band = transicionActivoSaturado(matrizRed, i, j, N, M);
-                        if(band){ matrizRedAux[i][j] = 2; }
+                        band = transicionActivoSaturado(matrizRed, i, j, N, M);
+                        if(band) { matrizRedAux[i][j] = 2; }
                         band = transicionSaturadoActivo(matrizRed, i, j, N, M);
-                        if(band){matrizRedAux[i][j] = 1;}
+                        if(band) {matrizRedAux[i][j] = 1;}
                     } else {
-                        bool band = transicionActivoInactivo(matrizRed, i, j, N, M);
+                        band = transicionActivoInactivo(matrizRed, i, j, N, M);
                         if(band) {matrizRedAux[i][j] = 0;}
                         band = transicionInactivoActivo(matrizRed, i, j, N, M);
                         if(band) {matrizRedAux[i][j] = 1;}
                         band = transicionSaturadoInactivo(matrizRed, i, j, N, M);
-                        if(band){matrizRedAux[i][j] = 0;}
+                        if(band) {matrizRedAux[i][j] = 0;}
                     }
                     
                 }
@@ -150,7 +152,7 @@ bool transicionActivoSaturado(int **matriz, int row, int col, int N, int M) {
 
 			int pi = row + i; int pj = col + j;
 
-			if(pi < 0 || pi >= N || pj < 0 || pj >= M) continue;
+			if(pi < 0 || pi >= N || pj < 0 || pj > M) continue;
 
 			if(matriz[pi][pj] == 1) nVecinos++;
 			if(nVecinos >= 5) return true;
@@ -168,7 +170,7 @@ bool transicionSaturadoActivo(int **matriz, int row, int col, int N, int M) {
 
 			int pi = row + i; int pj = col + j;
 
-			if(pi < 0 || pi >= N || pj < 0 || pj >= M) continue;
+			if(pi < 0 || pi >= N || pj < 0 || pj > M) continue;
 
 			if(matriz[pi][pj] == 1) nVecinos++;
 		}
@@ -186,7 +188,7 @@ bool transicionActivoInactivo(int **matriz, int row, int col, int N, int M) {
 
 			int pi = row + i; int pj = col + j;
 
-			if(pi < 0 || pi >= N || pj < 0 || pj >= M) continue;
+			if(pi < 0 || pi >= N || pj < 0 || pj > M) continue;
 
 			if(matriz[pi][pj] != 1) nVecinos++;
 			if(nVecinos >= 4) return true;
@@ -203,7 +205,7 @@ bool transicionInactivoActivo(int **matriz, int row, int col, int N, int M) {
 
 			int pi = row + i; int pj = col + j;
 
-			if(pi < 0 || pi >= N || pj < 0 || pj >= M) continue;
+			if(pi < 0 || pi >= N || pj < 0 || pj > M) continue;
 
 			if(matriz[pi][pj] == 1) nVecinos++;
             //printf("[%d][%d], c = %d", row, col, nVecinos);
@@ -222,7 +224,7 @@ bool transicionSaturadoInactivo(int **matriz, int row, int col, int N, int M) {
 
 			int pi = row + i; int pj = col + j;
 
-			if(pi < 0 || pi >= N || pj < 0 || pj >= M) continue;
+			if(pi < 0 || pi >= N || pj < 0 || pj > M) continue;
 
 			if(matriz[pi][pj] == 0) nVecinos++;
 			if(nVecinos >= 5) return true;
